@@ -1,14 +1,17 @@
-import { MoviesProps } from "../types";
+import { useState } from "react";
+import { Movie } from "../types";
 import { getPosterUrl } from "../data/sampleMovies";
 
-export default function MoviesCard({ id, title, poster_path, vote_average }: MoviesProps) {
+export default function MovieCard({ movie }: { movie: Movie }) {
+  const [isFavourite, setIsFavourite] = useState(false);
+
   return (
 
-    <article className="movie-card" tabIndex={0} aria-label={title}>
+    <article className="movie-card" tabIndex={0} aria-label={movie.title}>
       <div className="poster-wrapper">
         <img
-          src={getPosterUrl(poster_path)}
-          alt={title}
+          src={getPosterUrl(movie.poster_path)}
+          alt={movie.title}
           className="poster-img"
           loading="lazy"
         />
@@ -19,10 +22,15 @@ export default function MoviesCard({ id, title, poster_path, vote_average }: Mov
               <svg viewBox="0 0 24 24">
                 <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
               </svg>
-              7.0
+              {movie.vote_average?.toFixed(1) ?? "N/A"}
             </span>
 
-            <button className="favorite-btn" title="Add to Watchlist">
+            <button
+              className="favorite-btn"
+              title={isFavourite ? "Remove from favourites" : "Add to favourites"}
+              aria-label={isFavourite ? "Remove from favourites" : "Add to favourites"}
+              onClick={() => setIsFavourite((current) => !current)}
+            >
               <svg
                 width="16"
                 height="16"
@@ -41,7 +49,7 @@ export default function MoviesCard({ id, title, poster_path, vote_average }: Mov
       </div>
 
       <div className="movie-card-info">
-        <h3 className="movie-card-title">{title}</h3>
+        <h2 className="movie-card-title">{movie.title}</h2>
 
         <div className="movie-card-meta">
           <span>2026</span>

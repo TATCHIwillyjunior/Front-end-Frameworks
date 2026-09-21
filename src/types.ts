@@ -1,4 +1,4 @@
-export interface MoviesProps {
+export interface Movie {
     id: number | string;
     title: string;
     original_title?: string;
@@ -13,4 +13,13 @@ export interface MoviesProps {
     adult ?: boolean;
     original_language ?: string;
     video ?: boolean
-};
+}
+
+export type MoviesProps = Movie;
+
+export interface SearchBarProps {
+    searchQuery?: string;
+    query?: string;
+    value?: string;
+    onChange: (newQuery: string) => void;
+}

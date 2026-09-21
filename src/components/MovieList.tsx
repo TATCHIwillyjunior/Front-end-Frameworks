@@ -2,12 +2,9 @@
 // It hold the responsibility of also displaying my movies card in grid formate for
 // easy view
 import MovieCard from "./MovieCard"
-import { SAMPLE_MOVIES } from "../data/sampleMovies";
+import { Movie } from "../types";
 
-export default function MovieList() {
-    
-  const sampleMoviesFunction = () => SAMPLE_MOVIES;
-  const movies = sampleMoviesFunction()
+export default function MovieList({ movies }: { movies: Movie[] }) {
 
 
   // adult: false,
@@ -31,13 +28,12 @@ export default function MovieList() {
     <div className="movieList">
         <section>
           <div className="movies-grid">
-            {movies.map((movies) => (
+            {movies.length === 0 ? (
+              <p>No movies found.</p>
+            ) : movies.map((movie) => (
               <MovieCard
-                key={movies.id}
-                id={movies.id}
-                title={movies.title}
-                poster_path={movies.poster_path}
-                vote_average={movies.vote_average}
+                key={movie.id}
+                movie={movie}
               />
             ))}
           </div>
