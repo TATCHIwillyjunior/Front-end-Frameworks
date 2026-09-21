@@ -1,7 +1,17 @@
+import MovieList from "./components/MovieList"
+import SearchBar from "./components/SearchBar"
+
 function App() {
+
   return (
-    <div>
-      <h1>Movie App</h1>
+    <div className="app-layout">
+      <main className="main-container">
+        <h1>Movie APP</h1>
+        <SearchBar />
+        <MovieList />
+        
+
+      </main>
     </div>
   )
 }
