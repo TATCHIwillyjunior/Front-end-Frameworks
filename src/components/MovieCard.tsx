@@ -1,22 +1,18 @@
-import { useState } from "react";
 import { Movie } from "../types";
 import { getPosterUrl } from "../data/sampleMovies";
+import { useOptionalAppContext } from "../context/AppContext";
 
 export default function MovieCard({
   movie,
   genres = {},
-  isFavorite,
-  onToggleFavorite,
   onSelect,
 }: {
   movie: Movie;
   genres?: Record<number, string>;
-  isFavorite?: boolean;
-  onToggleFavorite?: () => void;
   onSelect?: () => void;
 }) {
-  const [localIsFavourite, setLocalIsFavourite] = useState(false);
-  const isFavourite = isFavorite ?? localIsFavourite;
+  const appContext = useOptionalAppContext();
+  const isFavourite = appContext?.isFavorite(movie.id) ?? false;
   const movieGenres = movie.genre_ids
     ?.map((id) => genres[id])
     .filter((name): name is string => Boolean(name));
@@ -58,8 +54,7 @@ export default function MovieCard({
               aria-label={isFavourite ? "Remove from favourites" : "Add to favourites"}
               onClick={(event) => {
                 event.stopPropagation();
-                if (onToggleFavorite) onToggleFavorite();
-                else setLocalIsFavourite((current) => !current);
+                appContext?.toggleFavorite(movie);
               }}
             >
               <svg

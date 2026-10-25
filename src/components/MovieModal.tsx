@@ -6,22 +6,21 @@ import {
   getPlaceholderBackdrop,
   getPosterUrl,
 } from "../data/sampleMovies";
+import { useOptionalAppContext } from "../context/AppContext";
 
 interface MovieModalProps {
   movie: Movie;
   genres?: Record<number, string>;
-  isFavorite?: boolean;
-  onToggleFavorite?: () => void;
   onClose: () => void;
 }
 
 export default function MovieModal({
   movie,
   genres = {},
-  isFavorite = false,
-  onToggleFavorite,
   onClose,
 }: MovieModalProps) {
+  const appContext = useOptionalAppContext();
+  const isFavorite = appContext?.isFavorite(movie.id) ?? false;
   useEffect(() => {
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -96,11 +95,11 @@ export default function MovieModal({
               <p className="modal-overview">{movie.overview || "No overview available."}</p>
             </div>
             <div className="modal-footer-actions">
-              {onToggleFavorite && (
+              {appContext && (
                 <button
                   aria-pressed={isFavorite}
                   className="btn-primary"
-                  onClick={onToggleFavorite}
+                  onClick={() => appContext.toggleFavorite(movie)}
                   type="button"
                 >
                   <Heart size={17} />

@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import ApiConfigModal from "../components/ApiConfigModal";
 import FilterBar from "../components/FilterBar";
 import Header from "../components/Header";
@@ -7,21 +7,34 @@ import MovieModal from "../components/MovieModal";
 import StatsBanner from "../components/StatsBanner";
 import { useGenres } from "../hooks/useGenres";
 import { useMovies } from "../hooks/useMovies";
+import {
+  AppProvider,
+  useAppContext,
+  useOptionalAppContext,
+} from "../context/AppContext";
 import { storage } from "../services/storage";
 import type { Movie } from "../types";
 
 export default function HomePage() {
+  const context = useOptionalAppContext();
+  return context ? <HomePageContent /> : (
+    <AppProvider>
+      <HomePageContent />
+    </AppProvider>
+  );
+}
+
+function HomePageContent() {
   const baseUrl = import.meta.env.VITE_TMDB_BASE_URL ?? "";
   const [search, setSearch] = useState("");
   const [selectedGenre, setSelectedGenre] = useState<number | null>(null);
   const [sort, setSort] = useState<"popularity" | "vote_average" | "release_date" | "title">("popularity");
   const [view, setView] = useState<"grid" | "list">("grid");
   const [onlyFavorites, setOnlyFavorites] = useState(false);
-  const [theme, setTheme] = useState<"dark" | "light">(storage.getTheme);
-  const [favorites, setFavorites] = useState<Movie[]>(storage.getFavorites);
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
   const [apiConfigOpen, setApiConfigOpen] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  const { favorites } = useAppContext();
 
   const { movies, loading, error, isLiveAPI } = useMovies({
     baseUrl,
@@ -34,28 +47,11 @@ export default function HomePage() {
   });
   const { genres, error: genresError } = useGenres(baseUrl, refreshKey);
 
-  const favoriteIds = useMemo(
-    () => new Set(favorites.map((movie) => String(movie.id))),
-    [favorites],
-  );
-
-  const updateFavorites = useCallback((movie: Movie) => {
-    setFavorites((current) => {
-      const next = current.some((item) => String(item.id) === String(movie.id))
-        ? current.filter((item) => String(item.id) !== String(movie.id))
-        : [...current, movie];
-      storage.setFavorites(next);
-      return next;
-    });
+  useEffect(() => {
     if (onlyFavorites) setRefreshKey((key) => key + 1);
-  }, [onlyFavorites]);
+  }, [favorites, onlyFavorites]);
 
-  function toggleTheme() {
-    const nextTheme = theme === "dark" ? "light" : "dark";
-    setTheme(nextTheme);
-    storage.setTheme(nextTheme);
-    document.documentElement.setAttribute("data-theme", nextTheme);
-  }
+  const closeMovieModal = useCallback(() => setSelectedMovie(null), []);
 
   function saveApiKey(apiKey: string) {
     storage.setApiKey(apiKey);
@@ -71,14 +67,11 @@ export default function HomePage() {
   return (
     <div className="app-layout">
       <Header
-        favCount={favorites.length}
         onOpenApiConfig={() => setApiConfigOpen(true)}
         onSearch={setSearch}
         onToggleFavorites={() => setOnlyFavorites((current) => !current)}
-        onToggleTheme={toggleTheme}
         onlyFavorites={onlyFavorites}
         search={search}
-        theme={theme}
       />
       <main className="main-container">
         <h1 className="sr-only">Movie browser</h1>
@@ -111,11 +104,9 @@ export default function HomePage() {
             {movies.map((movie) => (
               <MovieCard
                 genres={genres}
-                isFavorite={favoriteIds.has(String(movie.id))}
                 key={movie.id}
                 movie={movie}
                 onSelect={() => setSelectedMovie(movie)}
-                onToggleFavorite={() => updateFavorites(movie)}
               />
             ))}
           </div>
@@ -124,10 +115,8 @@ export default function HomePage() {
       {selectedMovie && (
         <MovieModal
           genres={genres}
-          isFavorite={favoriteIds.has(String(selectedMovie.id))}
           movie={selectedMovie}
-          onClose={() => setSelectedMovie(null)}
-          onToggleFavorite={() => updateFavorites(selectedMovie)}
+          onClose={closeMovieModal}
         />
       )}
       {apiConfigOpen && (

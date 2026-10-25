@@ -39,6 +39,18 @@ export const storage = {
     localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(movies));
   },
 
+  toggleFavorite(movie: Movie): void {
+    const favorites = this.getFavorites();
+    const nextFavorites = favorites.some(
+      (favorite) => String(favorite.id) === String(movie.id),
+    )
+      ? favorites.filter(
+          (favorite) => String(favorite.id) !== String(movie.id),
+        )
+      : [...favorites, movie];
+    this.setFavorites(nextFavorites);
+  },
+
   getTheme(): "dark" | "light" {
     return localStorage.getItem(THEME_STORAGE_KEY) === "light" ? "light" : "dark";
   },
