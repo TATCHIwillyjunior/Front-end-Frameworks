@@ -46,7 +46,7 @@ For GitHub Actions submissions, add the secret provided by your teacher:
 
 - Go to **Settings → Secrets and variables → Actions → New repository secret**
 - Name: `SHEETS_WEBHOOK_URL`
-- Value: the URL provided via Teams
+- Value: the URL provided via Teams -----2
 
 ## Scripts
 
