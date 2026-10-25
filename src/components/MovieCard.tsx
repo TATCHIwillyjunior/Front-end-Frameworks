@@ -2,12 +2,39 @@ import { useState } from "react";
 import { Movie } from "../types";
 import { getPosterUrl } from "../data/sampleMovies";
 
-export default function MovieCard({ movie }: { movie: Movie }) {
-  const [isFavourite, setIsFavourite] = useState(false);
+export default function MovieCard({
+  movie,
+  genres = {},
+  isFavorite,
+  onToggleFavorite,
+  onSelect,
+}: {
+  movie: Movie;
+  genres?: Record<number, string>;
+  isFavorite?: boolean;
+  onToggleFavorite?: () => void;
+  onSelect?: () => void;
+}) {
+  const [localIsFavourite, setLocalIsFavourite] = useState(false);
+  const isFavourite = isFavorite ?? localIsFavourite;
+  const movieGenres = movie.genre_ids
+    ?.map((id) => genres[id])
+    .filter((name): name is string => Boolean(name));
 
   return (
 
-    <article className="movie-card" tabIndex={0} aria-label={movie.title}>
+    <article
+      aria-label={movie.title}
+      className="movie-card"
+      onClick={onSelect}
+      onKeyDown={(event) => {
+        if ((event.key === "Enter" || event.key === " ") && event.target === event.currentTarget) {
+          event.preventDefault();
+          onSelect?.();
+        }
+      }}
+      tabIndex={0}
+    >
       <div className="poster-wrapper">
         <img
           src={getPosterUrl(movie.poster_path)}
@@ -29,7 +56,11 @@ export default function MovieCard({ movie }: { movie: Movie }) {
               className="favorite-btn"
               title={isFavourite ? "Remove from favourites" : "Add to favourites"}
               aria-label={isFavourite ? "Remove from favourites" : "Add to favourites"}
-              onClick={() => setIsFavourite((current) => !current)}
+              onClick={(event) => {
+                event.stopPropagation();
+                if (onToggleFavorite) onToggleFavorite();
+                else setLocalIsFavourite((current) => !current);
+              }}
             >
               <svg
                 width="16"
@@ -52,13 +83,16 @@ export default function MovieCard({ movie }: { movie: Movie }) {
         <h2 className="movie-card-title">{movie.title}</h2>
 
         <div className="movie-card-meta">
-          <span>2026</span>
-          <span>410 votes</span>
+          <span>{movie.release_date?.slice(0, 4) || "Unknown"}</span>
+          <span>{movie.vote_count ?? 0} votes</span>
         </div>
 
         <div className="movie-genres-tags">
-          <span className="genre-tag">Adventure</span>
-          <span className="genre-tag">Animation</span>
+          {movieGenres?.map((genre) => (
+            <span className="genre-tag" key={genre}>
+              {genre}
+            </span>
+          ))}
         </div>
       </div>
     </article>

@@ -108,6 +108,72 @@ select {
   flex: 1;
 }
 
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.header-nav {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.header-nav a {
+  color: var(--text-muted);
+}
+
+.header-nav a.active,
+.header-nav a:hover {
+  color: var(--text-main);
+}
+
+.content-page {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+  padding-top: 48px;
+}
+
+.empty-state {
+  padding: 48px 20px;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.api-config-dialog {
+  max-width: 520px;
+}
+
+.api-config-dialog .modal-content-details {
+  padding: 44px 32px 32px;
+}
+
+.api-config-dialog form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.api-config-dialog input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+}
+
 /* Header */
 .site-header {
   position: sticky;

@@ -4,7 +4,13 @@
 import MovieCard from "./MovieCard"
 import { Movie } from "../types";
 
-export default function MovieList({ movies }: { movies: Movie[] }) {
+export default function MovieList({
+  movies,
+  genres = {},
+}: {
+  movies: Movie[];
+  genres?: Record<number, string>;
+}) {
 
 
   // adult: false,
@@ -34,6 +40,7 @@ export default function MovieList({ movies }: { movies: Movie[] }) {
               <MovieCard
                 key={movie.id}
                 movie={movie}
+                genres={genres}
               />
             ))}
           </div>
