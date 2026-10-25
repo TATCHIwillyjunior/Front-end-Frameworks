@@ -24,6 +24,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 
 import App from '../App'
 import { AppProvider, useAppContext } from '../context/AppContext'
+import { SAMPLE_MOVIES } from '../data/sampleMovies'
 import type { Movie } from '../types'
 
 // ── Shared test fixtures ──────────────────────────────────────────────────────
@@ -323,8 +324,9 @@ describe('Global state — shared between components', () => {
 // ── Milestone 1 & 2 regression ────────────────────────────────────────────────
 
 describe('Regression — Milestone 1 and 2 still work', () => {
-  it('the app renders without crashing', () => {
+  it('the app renders without crashing', async () => {
     expect(() => render(<App />)).not.toThrow()
+    expect(await screen.findByText(SAMPLE_MOVIES[0].title)).toBeInTheDocument()
   })
 
   it('displays movies after the home page fetch resolves', async () => {
@@ -334,14 +336,16 @@ describe('Regression — Milestone 1 and 2 still work', () => {
     })
   })
 
-  it('Home and About navigation links are present', () => {
+  it('Home and About navigation links are present', async () => {
     render(<App />)
     expect(screen.getByRole('link', { name: /home/i })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /about/i })).toBeInTheDocument()
+    expect(await screen.findByText(SAMPLE_MOVIES[0].title)).toBeInTheDocument()
   })
 
-  it('the search input is present', () => {
+  it('the search input is present', async () => {
     render(<App />)
     expect(screen.getByRole('textbox')).toBeInTheDocument()
+    expect(await screen.findByText(SAMPLE_MOVIES[0].title)).toBeInTheDocument()
   })
 })
